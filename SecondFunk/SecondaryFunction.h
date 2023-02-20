@@ -91,3 +91,6 @@ DYNAMIC_API void printHeader(std::wstring_view);
 
 // Convert an ANSI string to a wide Unicode String
 DYNAMIC_API std::wstring ansi2unicode(const std::string&);
+
+// Convert a wide Unicode string to an UTF8 string
+DYNAMIC_API std::string utf8_encode(const std::wstring& wstr);

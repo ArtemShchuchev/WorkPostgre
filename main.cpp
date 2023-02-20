@@ -34,15 +34,35 @@ email
 int main(int argc, char** argv)
 {
 	printHeader(L"Работа с PostgreSQL из C++");
-
+	//setlocale(LC_ALL, "ru_RU.UTF-8");
+	//system("chcp 1251");
 	try
 	{
-		pqxx::connection c(
+		auto c = new pqxx::connection(
 			"host=localhost "
 			"port=5432 "
 			"dbname=WorkPostgre "
 			"user=postgres "
 			"password=postgres");
+		std::wcout << L"Соединение с БД " << c->dbname() << "...\n";
+		Clientdb client(c);
+		client.createTable();
+		
+		while (true)	// заполняю БД клиентами
+		{
+			std::wstring qwery;
+			do
+			{
+				std::wcout << L"Добавить нового клиента? д/н "; std::wcin >> qwery;
+			} while (qwery != L"д" and qwery != L"н");
+			if (qwery == L"н") break;
+			std::wstring name, lname, mail;
+			std::wcout << L"Введите нового клиента:\nИмя: "; std::wcin >> name;
+			std::wcout << L"Фамилия: "; std::wcin >> lname;
+			std::wcout << L"@mail: "; std::wcin >> mail;
+			client.addCl(utf8_encode(name), utf8_encode(lname), utf8_encode(mail));
+		}
+		
 	}
 	catch (std::exception const& err)
 	{
