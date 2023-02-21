@@ -1,6 +1,7 @@
 ﻿#include <pqxx/pqxx>
 #include "SecondaryFunction.h"
 #include "Clientdb/Clientdb.h"
+#include "main.h"
 
 
 /*
@@ -33,9 +34,9 @@ email
 
 int main(int argc, char** argv)
 {
+	//system("chcp 1251");
 	printHeader(L"Работа с PostgreSQL из C++");
 	//setlocale(LC_ALL, "ru_RU.UTF-8");
-	//system("chcp 1251");
 	try
 	{
 		auto c = new pqxx::connection(
@@ -67,6 +68,7 @@ int main(int argc, char** argv)
 	catch (std::exception const& err)
 	{
 		consoleCol(col::br_red);
+		std::wcerr << L"\nОшибка: " << utf8_decode(err.what()) << '\n';
 		std::wcerr << L"\nОшибка: " << ansi2unicode(err.what()) << '\n';
 		consoleCol(col::cancel);
 	}
