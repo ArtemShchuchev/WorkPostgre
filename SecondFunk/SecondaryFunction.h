@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <iostream>
 //#define COMPILE_LIBRARY
@@ -86,17 +86,17 @@ namespace col
 // цвет в консоли
 DYNAMIC_API void consoleCol(COLOR);
 
-// заголовок (std::string_view - std17)
-DYNAMIC_API void printHeader(std::wstring_view);
+// заголовок
+DYNAMIC_API void printHeader(const std::wstring&);
 
 // Convert an ANSI string to a wide Unicode String
-DYNAMIC_API std::wstring ansi2unicode(const std::string&);
-
-// Convert a wide Unicode string to an UTF8 string
-DYNAMIC_API std::string utf8_encode(const std::wstring& wstr);
+DYNAMIC_API std::wstring ansi2wide(const std::string&);
 
 // Convert an UTF8 string to a wide Unicode String
-DYNAMIC_API std::wstring utf8_decode(const std::string& str);
+DYNAMIC_API std::wstring utf2wide(const std::string&);
+
+// Convert a wide Unicode string to an UTF8 string
+DYNAMIC_API std::string wide2utf(const std::wstring&);
 
 // Convert an wide Unicode string to ANSI string
-DYNAMIC_API std::string unicode2ansi(const std::wstring& wstr);
+DYNAMIC_API std::string wide2ansi(const std::wstring&);
