@@ -39,7 +39,7 @@ void Clientdb::addClient(const std::wstring& firstName, const std::wstring& last
 	const std::string insPerson{ "INSERT INTO person(firstName, lastName, email) VALUES('" };
 
 	pqxx::work tx{ *connect };
-	tx.exec(insPerson + wide2utf(firstName) + "', '" + wide2utf(lastName) + "', '" + wide2utf(email) + "');");
+	tx.exec(insPerson + tx.esc(wide2utf(firstName)) + "', '" + tx.esc(wide2utf(lastName)) + "', '" + tx.esc(wide2utf(email)) + "');");
 	tx.commit();
 }
 
@@ -65,7 +65,7 @@ void Clientdb::search(Column c, const std::wstring& name)
 
 	for (auto &[id, fn, ln, em, ph] :
 		tx.query<int, std::string, std::string, std::string, std::optional<std::string>>
-		(selectTab + sch_col.at(c) + "'" + wide2utf(name) + "'"))
+		(selectTab + sch_col.at(c) + "'" + tx.esc(wide2utf(name)) + "'"))
 	{
 		std::wstring phone = ph.has_value() ? utf2wide(*ph) : L"Нет номера";
 		Table tab{ id, utf2wide(fn), utf2wide(ln), utf2wide(em), phone };
@@ -106,7 +106,7 @@ void Clientdb::addPhone(int id, const std::wstring& phone)
 	const std::string insPhone{ "INSERT INTO phone(personId, phoneNumber) VALUES(" };
 
 	pqxx::work tx{ *connect };
-	tx.exec(insPhone + std::to_string(id) + ", '" + wide2utf(phone) + "');");
+	tx.exec(insPhone + std::to_string(id) + ", '" + tx.esc(wide2utf(phone)) + "');");
 	tx.commit();
 }
 
@@ -118,12 +118,12 @@ void Clientdb::change(Column c, const int id, const std::wstring& changestr)
 	if (c == PHONE)
 	{
 		updstr = "update phone set " + chg_col.at(c) + " = '" +
-			wide2utf(changestr) + "' where id = " + std::to_string(id);
+			tx.esc(wide2utf(changestr)) + "' where id = " + std::to_string(id);
 	}
 	else
 	{
 		updstr = "update person set " + chg_col.at(c) + " = '" +
-			wide2utf(changestr) + "' where id = " + std::to_string(id);
+			tx.esc(wide2utf(changestr)) + "' where id = " + std::to_string(id);
 	}
 	tx.exec(updstr);
 	tx.commit();
