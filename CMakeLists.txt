@@ -1,14 +1,15 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.19)
 project(WorkPostgre VERSION 1.0 LANGUAGES CXX)
 
 set(OUTPUT_NAME WorkPostgre)
 set(HEADERS Clientdb/Clientdb.h)
 set(SOURCES main.cpp Clientdb/Clientdb.cpp)
 set(MYLIB_PATH ${PROJECT_SOURCE_DIR}/SecondFunk)
+set(LIBPQ_ROOT C:/UTIL/Lib/libpqxx-7.8.1)      # Укажите путь к libpq++
 # добавляет путь для подключения #include
 include_directories(${MYLIB_PATH})
 
-add_subdirectory(D:/UTIL/Lib/libpqxx-7.7.4 libpqxx-build)      # Укажите путь к libpq++
+add_subdirectory(${LIBPQ_ROOT} libpqxx-build EXCLUDE_FROM_ALL)
 
 add_executable(${OUTPUT_NAME} ${HEADERS} ${SOURCES})
 add_library(SecFun_lib SHARED IMPORTED)
