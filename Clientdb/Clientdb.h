@@ -41,7 +41,7 @@ private:
 public:
 	enum Column{ FIRSTNAME, LASTNAME, EMAIL, PHONE };
 
-	Clientdb(pqxx::connection*);
+	Clientdb();
 	bool is_open();
 	std::wstring dbname();
 	void createTable();

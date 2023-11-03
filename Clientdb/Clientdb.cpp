@@ -1,7 +1,14 @@
 ﻿#include "Clientdb.h"
 
-Clientdb::Clientdb(pqxx::connection* c) : connect(c)
+Clientdb::Clientdb()
 {
+	connect = std::make_unique<pqxx::connection>(
+		"host=localhost "
+		"port=5432 "
+		"dbname=WorkPostgre "
+		"user=postgres "
+		"password=postgres");
+	connect->set_client_encoding("WIN1251");
 }
 
 bool Clientdb::is_open()
@@ -39,7 +46,7 @@ void Clientdb::addClient(const std::wstring& firstName, const std::wstring& last
 	const std::string insPerson{ "INSERT INTO person(firstName, lastName, email) VALUES('" };
 
 	pqxx::work tx{ *connect };
-	tx.exec(insPerson + tx.esc(wide2utf(firstName)) + "', '" + tx.esc(wide2utf(lastName)) + "', '" + tx.esc(wide2utf(email)) + "');");
+	tx.exec(insPerson + tx.esc(wide2ansi(firstName)) + "', '" + tx.esc(wide2ansi(lastName)) + "', '" + tx.esc(wide2ansi(email)) + "');");
 	tx.commit();
 }
 
@@ -52,8 +59,8 @@ void Clientdb::showTable()
 		tx.query<int, std::string, std::string, std::string, std::optional<std::string>>
 		(selectTab + "order by p.id"))
 	{
-		std::wstring phone = ph.has_value() ? utf2wide(*ph) : L"Нет номера";
-		Table tab{ id, utf2wide(fn), utf2wide(ln), utf2wide(em), phone };
+		std::wstring phone = ph.has_value() ? ansi2wide(*ph) : L"Нет номера";
+		Table tab{ id, ansi2wide(fn), ansi2wide(ln), ansi2wide(em), phone };
 		printTab(tab);
 	}
 }
@@ -65,10 +72,10 @@ void Clientdb::search(Column c, const std::wstring& name)
 
 	for (auto &[id, fn, ln, em, ph] :
 		tx.query<int, std::string, std::string, std::string, std::optional<std::string>>
-		(selectTab + sch_col.at(c) + "'" + tx.esc(wide2utf(name)) + "'"))
+		(selectTab + sch_col.at(c) + "'" + tx.esc(wide2ansi(name)) + "'"))
 	{
-		std::wstring phone = ph.has_value() ? utf2wide(*ph) : L"Нет номера";
-		Table tab{ id, utf2wide(fn), utf2wide(ln), utf2wide(em), phone };
+		std::wstring phone = ph.has_value() ? ansi2wide(*ph) : L"Нет номера";
+		Table tab{ id, ansi2wide(fn), ansi2wide(ln), ansi2wide(em), phone };
 		printTab(tab);
 	}
 }
@@ -106,7 +113,7 @@ void Clientdb::addPhone(int id, const std::wstring& phone)
 	const std::string insPhone{ "INSERT INTO phone(personId, phoneNumber) VALUES(" };
 
 	pqxx::work tx{ *connect };
-	tx.exec(insPhone + std::to_string(id) + ", '" + tx.esc(wide2utf(phone)) + "');");
+	tx.exec(insPhone + std::to_string(id) + ", '" + tx.esc(wide2ansi(phone)) + "');");
 	tx.commit();
 }
 
@@ -118,12 +125,12 @@ void Clientdb::change(Column c, const int id, const std::wstring& changestr)
 	if (c == PHONE)
 	{
 		updstr = "update phone set " + chg_col.at(c) + " = '" +
-			tx.esc(wide2utf(changestr)) + "' where id = " + std::to_string(id);
+			tx.esc(wide2ansi(changestr)) + "' where id = " + std::to_string(id);
 	}
 	else
 	{
 		updstr = "update person set " + chg_col.at(c) + " = '" +
-			tx.esc(wide2utf(changestr)) + "' where id = " + std::to_string(id);
+			tx.esc(wide2ansi(changestr)) + "' where id = " + std::to_string(id);
 	}
 	tx.exec(updstr);
 	tx.commit();
@@ -140,8 +147,8 @@ void Clientdb::showPerson(const int idPerson)
 		tx.query<int, std::string, std::string, std::string, std::optional<std::string>>
 		(selectTab + id_person + std::to_string(idPerson)))
 	{
-		std::wstring phone = ph.has_value() ? utf2wide(*ph) : L"Нет номера";
-		Table tab{ id, utf2wide(fn), utf2wide(ln), utf2wide(em), phone };
+		std::wstring phone = ph.has_value() ? ansi2wide(*ph) : L"Нет номера";
+		Table tab{ id, ansi2wide(fn), ansi2wide(ln), ansi2wide(em), phone };
 		printTab(tab);
 	}
 }
@@ -159,7 +166,7 @@ void Clientdb::showPhone(const int idPerson)
 
 	for (auto& [id, ph] : tx.query<int, std::optional<std::string>>(selectPhone))
 	{
-		std::wstring phone = ph.has_value() ? utf2wide(*ph) : L"Нет номера";
+		std::wstring phone = ph.has_value() ? ansi2wide(*ph) : L"Нет номера";
 		std::wcout << std::left << std::setw(4) << id << "| " << phone << "\n";
 	}
 }

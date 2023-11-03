@@ -42,13 +42,7 @@ int main(int argc, char** argv)
 	
 	try
 	{
-		auto c = new pqxx::connection(
-			"host=localhost "
-			"port=5432 "
-			"dbname=WorkPostgre "
-			"user=postgres "
-			"password=postgres");
-		Clientdb client(c);
+		Clientdb client;
 		std::wcout << L"Соединение с БД...\n";
 		if (client.is_open()) std::wcout << L"База данных \"" << client.dbname() << L"\" успешно подключена.\n";
 		else throw std::runtime_error("Не удалось подключиться к БД");
@@ -75,15 +69,17 @@ int main(int argc, char** argv)
 			А если допустить ошибку в таблице, ну например
 			для связи указать не существующий слолбец, то 
 			он сообщит об этом в другой кодировке (UTF-8). o|
+
+			Ура! Я победил дурдом!
 		*/
 		std::string errstr = err.what();
 		consoleCol(col::br_red);
 		std::wcout << L"\nОшибка типа: " << typeid(err).name() << "\n";
 
-		std::wcerr << L"\nСообщение об ошибке:\n";
-		std::wcerr << utf2wide(errstr) << '\n';
+		//std::wcerr << L"\nСообщение об ошибке:\n";
+		//std::wcerr << utf2wide(errstr) << '\n';
 
-		std::wcerr << L"\nОшибка в учетке:\n";
+		//std::wcerr << L"\nОшибка в учетке:\n";
 		std::wcerr << ansi2wide(errstr) << '\n';
 		consoleCol(col::cancel);
 	}
