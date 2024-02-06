@@ -5,7 +5,7 @@ set(OUTPUT_NAME WorkPostgre)
 set(HEADERS Clientdb/Clientdb.h)
 set(SOURCES main.cpp Clientdb/Clientdb.cpp)
 set(MYLIB_PATH ${PROJECT_SOURCE_DIR}/SecondFunk)
-set(LIBPQ_ROOT C:/UTIL/Lib/libpqxx-7.8.1)      # Укажите путь к libpq++
+set(LIBPQ_ROOT $ENV{LIBPQXX_ROOT})      # Укажите путь к libpq++
 # добавляет путь для подключения #include
 include_directories(${MYLIB_PATH})
 
