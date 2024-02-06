@@ -60,6 +60,13 @@ int main(int argc, char** argv)
 
 		deldata(client);	// удаление данных
 	}
+	catch (const pqxx::broken_connection& err)
+	{
+		consoleCol(col::br_red);
+		std::wcerr << L"\nОшибка типа: " << typeid(err).name() << "\n";
+		std::wcerr << ansi2wide(err.what()) << '\n';
+		consoleCol(col::cancel);
+	}
 	catch (std::exception const& err)
 	{
 		/*
@@ -74,13 +81,8 @@ int main(int argc, char** argv)
 		*/
 		std::string errstr = err.what();
 		consoleCol(col::br_red);
-		std::wcout << L"\nОшибка типа: " << typeid(err).name() << "\n";
-
-		//std::wcerr << L"\nСообщение об ошибке:\n";
-		//std::wcerr << utf2wide(errstr) << '\n';
-
-		//std::wcerr << L"\nОшибка в учетке:\n";
-		std::wcerr << ansi2wide(errstr) << '\n';
+		std::wcerr << L"\nОшибка типа: " << typeid(err).name() << "\n";
+		std::wcerr << utf2wide(errstr) << '\n';
 		consoleCol(col::cancel);
 	}
 
